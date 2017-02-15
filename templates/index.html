@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  </head>
+  <body>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '',
+          xfbml      : true,
+          version    : 'v2.8'
+        });
+        FB.AppEvents.logPageView();
+        FB.Event.subscribe('send_to_messenger', function(e) {
+          console.log(e);
+       });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "//connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+
+    </script>
+    <section class="hero is-primary is-fullheight">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <h1 class="title">
+            Build-A-Bot
+          </h1>
+          <p class="has-text-centered">
+            <div class="fb-send-to-messenger"
+              messenger_app_id=""
+              page_id=""
+              data-ref="main_page_parameter"
+              color="blue"
+              size="standard">
+            </div>
+            <div class="fb-messengermessageus"
+              messenger_app_id="APP_ID"
+              page_id="PAGE_ID"
+              color="blue"
+              size="standard" ></div>
+          </p>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
