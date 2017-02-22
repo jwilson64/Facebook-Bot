@@ -10,19 +10,19 @@
     <h1>Login</h1>
     <div>
       This should be a login page. If the user successfully logs, they should
-      be redirect to this link: <a href="">Complete Account Link</a>
+      be redirected to this link: <a href="{{redirect_uri_success|safe}}">Complete Account Link</a>
     </div>
 
     <div>
-      Account linking token:
+      Account linking token: {{account_linking_token|safe}}
     </div>
 
     <div>
-      Redirect URI:
+      Redirect URI: {{redirect_uri|safe}}
     </div>
 
     <div>
-      Redirect URI Successful:
+      Redirect URI Successful: {{redirect_uri_success|safe}}
     </div>
   </body>
 </html>

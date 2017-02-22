@@ -1,8 +1,9 @@
 import os
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response,abort
 import config
 import hashlib, hmac
 from messaging import *
+from base64 import b64encode
 
 app = Flask(__name__)
 
@@ -23,35 +24,35 @@ def privacy():
 def webhooks():
     error=None
     if request.method == 'POST':
-        print request.get_json()
         if is_verified(request):
             data = request.get_json()
+            if data is None:
+                data = json.loads(request.data)
             if data['object'] == 'page':
                 return get_message(data)
-        else:
-            print "Unable to verify token."
-            return "<(' ')>"
+        return abort(404)
     else:
-        if request.args['hub.mode'] == 'subscribe' and request.args['hub.verify_token'] == VALIDATION_TOKEN:
-            print "Validating webhook"
-            return request.args['hub.challenge']
+        if all (k in request.args for k in ("hub.mode", "hub.verify_token")):
+            if request.args['hub.mode'] == 'subscribe' and request.args['hub.verify_token'] == VALIDATION_TOKEN:
+                return request.args['hub.challenge']
+            else:
+                return abort(404)
         else:
-            return 'webhooks'
+            return abort(404)
 
 
 @app.route('/authorize', methods=['GET'])
 def authorize():
     if is_verified(request):
-        data = request.get_json()
-        account_linking_token = data['account_linking_token']
-        redirect_uri = data['redirect_uri']
-        auth_code = str(os.urandom(24))
+        data = request.args
+        account_linking_token = data.get('account_linking_token')
+        redirect_uri = data.get('redirect_uri')
+        random = os.urandom(24)
+        auth_code = b64encode(random).decode("utf-8")
         redirect_uri_success = redirect_uri + "&authoization_code=" + auth_code
         return render_template('authorize.html',account_linking_token=account_linking_token,redirect_uri=redirect_uri,redirect_uri_success=redirect_uri_success)
-    return False
+    return abort(401)
 
-
-#verify signature request from Facebook.
 def is_verified(req):
     if 'x-hub-signature' in req.headers:
         sig = req.headers['x-hub-signature']
@@ -60,9 +61,14 @@ def is_verified(req):
             return False
         else:
             elements = sig.split('=')
+            if len(elements) < 2:
+                return False
             method = elements[0]
             sig_hash = elements[1]
-            expected_hash = hmac.new(config.APP_SECRET, req.data, hashlib.sha1)
+            data = req.data
+            expected_hash = hmac.new(config.APP_SECRET, data, hashlib.sha1)
+            print sig_hash
+            print expected_hash.hexdigest()
             return sig_hash == expected_hash.hexdigest()
     return False
 

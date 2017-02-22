@@ -8,11 +8,9 @@ def get_message(data):
         time_of_event = entry['time']
 
         for event in entry['messaging']:
-            print event
             if 'optin' in event:
                 received_authentication(event)
             elif 'message' in event:
-                print "We have received a message"
                 received_message(event)
             elif 'delivery' in event:
                 received_delivery_confirmation(event)
@@ -28,7 +26,6 @@ def get_message(data):
     return "Message received"
 
 def get_response(message_text,sender_id):
-    print message_text
     if message_text == 'generic':
         send_generic_message(sender_id)
     elif message_text == 'account linking':
@@ -67,6 +64,9 @@ def received_postback(event):
     payload = event['postback']['payload']
     send_text_message(sender_id, "Postback Called")
 
+def received_message_read(event):
+    pass
+
 def received_account_link(event):
     sender_id = event['sender']['id']
     recipient_id = event['recipient']['id']
@@ -92,9 +92,6 @@ def received_message(event):
     elif message_attachments:
         send_image_message(sender_id, message_attachments)
 
-# See /me/messaging Graph API for more information on the format of the message
-
-# When you send an image to the bot it will respond with a thumbs up
 def send_image_message(recipient_id, attachments):
     message_data = {
         'recipient' : {
@@ -111,7 +108,6 @@ def send_image_message(recipient_id, attachments):
     }
     call_send_api(message_data)
 
-# Send account linking info for authorization
 def send_account_linking(recipient_id):
     message_data = {
         'recipient' : {
@@ -133,7 +129,8 @@ def send_account_linking(recipient_id):
     }
     call_send_api(message_data)
 
-# If all else fails send them a generic welcome message
+
+
 def send_generic_message(recipient_id,message_text):
     message_data = {
         'recipient': {
@@ -145,7 +142,6 @@ def send_generic_message(recipient_id,message_text):
     }
     call_send_api(message_data)
 
-# By default the bot will just repeat back your previous message.
 def send_text_message(recipient_id, message_text):
     message_data = {
         'recipient': {
@@ -158,7 +154,8 @@ def send_text_message(recipient_id, message_text):
     call_send_api(message_data)
 
 def call_send_api(message_data):
+    if message_data['recipient']['id'] == "tester":
+        return message_data
     api = Api()
-    # Call the /me/messages graph API. access_token is your page access token. https://graph.facebook.com/me/messages?access_token=
-    url = ""
+    url = "https://graph.facebook.com/me/messages?access_token=EAACFzWTKft4BAISo9n4BF19qHWS3C4MYAoPH9eRbcpaFwuQSGGayxrDAGVKKJVJumpx3aEXKt8P5yDm9S9Er1hnqvFVTIIATMpmMrCnr9aJtRhhTEuq8dIzTAoPlAKl9EhkUEOe4fieVC9KsfqnxsuDBcvG97yp91PmEYwZDZD"
     api.post(json.dumps(message_data),url)
