@@ -157,5 +157,5 @@ def call_send_api(message_data):
     if message_data['recipient']['id'] == "tester":
         return message_data
     api = Api()
-    url = "https://graph.facebook.com/me/messages?access_token=EAACFzWTKft4BAISo9n4BF19qHWS3C4MYAoPH9eRbcpaFwuQSGGayxrDAGVKKJVJumpx3aEXKt8P5yDm9S9Er1hnqvFVTIIATMpmMrCnr9aJtRhhTEuq8dIzTAoPlAKl9EhkUEOe4fieVC9KsfqnxsuDBcvG97yp91PmEYwZDZD"
+    url = "https://graph.facebook.com/me/messages?access_token="
     api.post(json.dumps(message_data),url)
